@@ -1,4 +1,5 @@
 def get_primes(target: int) -> list[int]:
+    """Nice way of finding primes using sieve of Testothanes"""
     if target < 2:
         return []
     is_prime = [True] * target
@@ -15,32 +16,41 @@ def get_primes(target: int) -> list[int]:
     return [idx for idx, prime in enumerate(is_prime) if prime]
 
 
-def get_lowest_prime_factor(target: int, primes: list[int] | None = None) -> int:
-    if primes is None:
-        primes = get_primes(target)
+def find_highest_prime_factor(target: int) -> int:
+    """Finds highest prime factor of given target integer"""
 
-    for prime in primes:
-        if target % prime == 0:
-            return prime
+    remaining = target
+    factor = 2
+    largest = 1
 
-    raise ValueError("Error: lowest prime factor not found. Try adding larger primes")
+    # You don't need to check factors above the square root of the remainder
+    # If you have checked all the factors up to and including the square root, only
+    # other option is for the remaining target to be prime itself (i.e., two numbers
+    # above the square root will always multiply together to make a too large number)
+    while factor**2 <= remaining:
+        # Divide out current factor as many times as possible before moving on
+        while remaining % factor == 0:
+            largest = factor
+            remaining //= factor
 
+        # Once you've tested 2, you don't need to test any other even factors
+        if factor == 2:
+            factor = 3
+        else:
+            factor += 2
 
-def get_prime_factors(target: int) -> list[int]:
-    primes = get_prime_factors(target)
-    prime_factors = []
+    if remaining > 1:
+        largest = remaining
 
-    while target not in primes:
-        prime_factor = get_lowest_prime_factor(target, primes)
-        prime_factors.append(prime_factor)
-        target = target // prime_factor
-
-    prime_factors.append(target)
-    return prime_factors
+    return largest
 
 
 def main():
-    print(get_prime_factors(600851475143))
+
+    target = 600851475143
+    # target = 13195
+
+    print(find_highest_prime_factor(target))
 
 
 if __name__ == "__main__":
