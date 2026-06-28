@@ -6,28 +6,45 @@ By considering the terms in the Fibonacci sequence whose values do not exceed fo
 million, find the sum of the even-valued terms.
 """
 
+from collections.abc import Iterator
+
 import numpy as np
 import numpy.typing as npt
 
 
 def get_fibonacci_below_target(target: int) -> npt.NDArray:
+    """Original solution"""
     a = 1
     b = 2
     fibonacci_series = [1, 2]
     while a + b < target:
-        next_val = a + b
-        a = b
-        b = next_val
-        fibonacci_series.append(next_val)
+        fibonacci_series.append(a + b)
+        a, b = b, a + b
 
     return np.array(fibonacci_series)
 
 
+def get_fibonacci_below_target_generator(target: int) -> Iterator[int]:
+    """Generator function solution"""
+    a, b = 1, 2
+    while a <= target:
+        yield a
+        a, b = b, a + b
+
+
 def main():
+    # original solution
     fib_array = get_fibonacci_below_target(4_000_000)
     evens = fib_array[fib_array % 2 == 0]
     print(evens)
     print(evens.sum())
+
+    # Generator solution
+    fib_list = [
+        n for n in get_fibonacci_below_target_generator(4_000_000) if n % 2 == 0
+    ]
+    print(fib_list)
+    print(sum(n for n in get_fibonacci_below_target_generator(4_000_000) if n % 2 == 0))
 
 
 if __name__ == "__main__":
